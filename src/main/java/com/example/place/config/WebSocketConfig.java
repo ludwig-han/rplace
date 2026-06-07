@@ -12,10 +12,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // 1. 클라이언트가 맨 처음 웹소켓 커넥션을 맺을 때 요청할 엔드포인트(주소)를 지정합니다.
-        // 나중에 프론트엔드에서 ws://localhost:8080/ws-connect 로 접속을 시도하게 됩니다.
         registry.addEndpoint("/ws-connect")
-                .setAllowedOriginPatterns("*")  // 크롬 창 여러 개 띄우거나 다른 IP에서 접속할 때 CORS 에러가 나는 것을 방지합니다.
+                .setAllowedOriginPatterns("*")
+                // 💡 [이 한 줄 추가!] 접속 시 손님의 IP 주소를 가로채서 웹소켓 세션에 쑤셔 넣습니다.
+                .addInterceptors(new org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor())
                 .withSockJS();
     }
 
