@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  place-db:
+    image: mysql:8.0
+    container_name: place-db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"   # 🔑 본인이 사용할 DB 패스워드
+      MYSQL_DATABASE: "placedb"             # 🗄️ 자동으로 생성될 스키마(디비) 이름
+    volumes:
+      - ./mysql_data:/var/lib/mysql         # 💾 중요: 젯슨이 꺼져도 데이터가 보존되도록 볼륨 마운트
+    restart: always

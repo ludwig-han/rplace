@@ -81,23 +81,33 @@
 
         stompClient.connect({}, function (frame) {
             console.log('연결 성공: ' + frame);
-            appendMessage("시스템", "단톡방에 연결되었습니다.", false);
 
             nicknameInput.disabled = true;
             const connectBtn = document.querySelector("button[onclick='connect()']");
             connectBtn.disabled = true;
             connectBtn.innerText = "접속 완료";
 
+            // ✨ [핵심 추가] 웹소켓 방 구독하기 직전에 과거 내역 긁어와서 그리기
+            fetch('/api/chat/history')
+                .then(response => response.json())
+                .then(history => {
+                    history.forEach(msg => {
+                        const isMe = (msg.token === myToken);
+                        appendMessage(msg.sender, msg.content, isMe, msg.timestamp);
+                    });
+                    appendMessage("시스템", "─── 이전 대화 내역 50개를 불러왔습니다 ───", false);
+                })
+                .catch(err => console.error("이전 대화 로딩 실패:", err));
+
+            // 실시간 리스너 작동
             stompClient.subscribe('/topic/room', function (chatResponse) {
                 const msg = JSON.parse(chatResponse.body);
-                // 3. 닉네임이 같아도 토큰이 다르면 남입니다. 토큰으로 '나'를 완벽 식별!
                 const isMe = (msg.token === myToken);
                 appendMessage(msg.sender, msg.content, isMe, msg.timestamp);
             });
         }, function(error) {
             alert("연결 실패: " + error);
         });
-    }
 
     function sendMessage() {
         const content = document.getElementById('message').value;
