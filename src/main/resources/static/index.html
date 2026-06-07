@@ -77,7 +77,8 @@
         localStorage.setItem('user_nickname', myNickname);
 
         // ✨ 수정 코드 (어떤 IP로 접속하든 자동으로 매핑됨)
-        const socket = new WebSocket("ws://" + window.location.host + "/ws/place");
+        // ✨ 수정 코드: 주소를 /ws-connect 로 맞추고 SockJS 객체로 감싸기!
+        const socket = new SockJS("http://" + window.location.host + "/ws-connect");
         stompClient = Stomp.over(socket);
 
         stompClient.connect({}, function (frame) {
