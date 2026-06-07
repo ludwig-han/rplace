@@ -46,7 +46,7 @@ public class ChatController {
         }
 
         // 3. ✨ 터미널 관리자 전용 초간결 미니멀 로그 메트릭 출력
-        System.out.printf("[%s] [💬CHAT] IP: %-15s | TOKEN: %-11s | USER: %-6s | MSG: %s\n",
+        System.out.printf("[%s] [CHAT] IP: %-15s | TOKEN: %-11s | USER: %-6s\nMessage: %s\n",
                 currentTime, userIp, message.token(), message.sender(), message.content());
 
         String clientTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("a h:mm"));
