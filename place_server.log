@@ -1,0 +1,43 @@
+2026-06-08T01:29:56.878+09:00  INFO 18268 --- [place] [main] com.example.place.PlaceApplication       : Starting PlaceApplication using Java 17.0.17 with PID 18268 (C:\Users\kor\Desktop\rplace\build\classes\java\main started by kor in C:\Users\kor\Desktop\rplace)
+2026-06-08T01:29:56.884+09:00 DEBUG 18268 --- [place] [main] com.example.place.PlaceApplication       : Running with Spring Boot v4.0.6, Spring v7.0.7
+2026-06-08T01:29:56.885+09:00  INFO 18268 --- [place] [main] com.example.place.PlaceApplication       : No active profile set, falling back to 1 default profile: "default"
+2026-06-08T01:29:58.291+09:00  INFO 18268 --- [place] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-06-08T01:29:58.324+09:00  INFO 18268 --- [place] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-06-08T01:29:58.325+09:00  INFO 18268 --- [place] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.21]
+2026-06-08T01:29:58.415+09:00  INFO 18268 --- [place] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 1451 ms
+2026-06-08T01:29:58.812+09:00  INFO 18268 --- [place] [main] o.s.b.w.a.WelcomePageHandlerMapping      : Adding welcome page: class path resource [static/index.html]
+2026-06-08T01:29:59.050+09:00  INFO 18268 --- [place] [main] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-06-08T01:29:59.051+09:00  INFO 18268 --- [place] [main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@ffd4cba]]
+2026-06-08T01:29:59.052+09:00  INFO 18268 --- [place] [main] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-06-08T01:29:59.078+09:00  INFO 18268 --- [place] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-06-08T01:29:59.086+09:00  INFO 18268 --- [place] [main] com.example.place.PlaceApplication       : Started PlaceApplication in 3.464 seconds (process running for 4.224)
+2026-06-08T01:30:00.988+09:00  INFO 18268 --- [place] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-06-08T01:30:00.989+09:00  INFO 18268 --- [place] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-06-08T01:30:00.990+09:00  INFO 18268 --- [place] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-06-08T01:30:59.051+09:00  INFO 18268 --- [place] [MessageBroker-3] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[2 current WS(2)-HttpStream(0)-HttpPoll(0), 4 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(4)-CONNECTED(4)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 16, active threads = 0, queued tasks = 0, completed tasks = 45], outboundChannel[pool size = 16, active threads = 0, queued tasks = 0, completed tasks = 16], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 3, completed tasks = 14]
+2026-06-08T01:32:15.157+09:00  INFO 18268 --- [place] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-06-08T01:32:15.384+09:00  INFO 18268 --- [place] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-06-08T01:32:15.394+09:00  INFO 18268 --- [place] [SpringApplicationShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2026-06-08T01:32:15.395+09:00  INFO 18268 --- [place] [SpringApplicationShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@ffd4cba]]
+2026-06-08T01:32:15.396+09:00  INFO 18268 --- [place] [SpringApplicationShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+2026-06-08T01:33:53.553+09:00  INFO 14032 --- [place] [main] com.example.place.PlaceApplication       : Starting PlaceApplication using Java 17.0.17 with PID 14032 (C:\Users\kor\Desktop\rplace\build\classes\java\main started by kor in C:\Users\kor\Desktop\rplace)
+2026-06-08T01:33:53.558+09:00 DEBUG 14032 --- [place] [main] com.example.place.PlaceApplication       : Running with Spring Boot v4.0.6, Spring v7.0.7
+2026-06-08T01:33:53.559+09:00  INFO 14032 --- [place] [main] com.example.place.PlaceApplication       : No active profile set, falling back to 1 default profile: "default"
+2026-06-08T01:33:54.955+09:00  INFO 14032 --- [place] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-06-08T01:33:54.975+09:00  INFO 14032 --- [place] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-06-08T01:33:54.975+09:00  INFO 14032 --- [place] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.21]
+2026-06-08T01:33:55.057+09:00  INFO 14032 --- [place] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 1282 ms
+2026-06-08T01:33:55.411+09:00  INFO 14032 --- [place] [main] o.s.b.w.a.WelcomePageHandlerMapping      : Adding welcome page: class path resource [static/index.html]
+2026-06-08T01:33:55.655+09:00  INFO 14032 --- [place] [main] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-06-08T01:33:55.656+09:00  INFO 14032 --- [place] [main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@6690b9fa]]
+2026-06-08T01:33:55.656+09:00  INFO 14032 --- [place] [main] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-06-08T01:33:55.684+09:00  INFO 14032 --- [place] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-06-08T01:33:55.690+09:00  INFO 14032 --- [place] [main] com.example.place.PlaceApplication       : Started PlaceApplication in 2.911 seconds (process running for 3.852)
+2026-06-08T01:33:55.833+09:00  INFO 14032 --- [place] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-06-08T01:33:55.834+09:00  INFO 14032 --- [place] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-06-08T01:33:55.835+09:00  INFO 14032 --- [place] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-06-08T01:34:25.798+09:00  INFO 14032 --- [place] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-06-08T01:34:25.990+09:00  INFO 14032 --- [place] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-06-08T01:34:25.998+09:00  INFO 14032 --- [place] [SpringApplicationShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2026-06-08T01:34:25.999+09:00  INFO 14032 --- [place] [SpringApplicationShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@6690b9fa]]
+2026-06-08T01:34:25.999+09:00  INFO 14032 --- [place] [SpringApplicationShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
