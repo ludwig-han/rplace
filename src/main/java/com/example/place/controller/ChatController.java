@@ -46,8 +46,10 @@ public class ChatController {
         }
 
         // 3. ✨ 터미널 관리자 전용 초간결 미니멀 로그 메트릭 출력
-        System.out.printf("[%s] [CHAT] IP: %-15s | TOKEN: %-11s | USER: %-6s\nMessage: %s\n",
-                currentTime, userIp, message.token(), message.sender(), message.content());
+        // 📝 ChatController.java 내부의 printf 문을 이 코드로 통째로 교체!
+        String cleanMsg = message.content().replace("\n", " ").replace("\r", " "); // 유저가 친 줄바꿈 한 줄로 펴기
+        System.out.printf("[%s] [CHAT] IP: %-15s | TOKEN: %-11s | USER: %-10s | MSG: %s\n",
+                currentTime, userIp, message.token(), String.format("%-6s", message.sender()), cleanMsg);
 
         String clientTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("a h:mm"));
         return new ChatMessage(message.sender(), message.content(), clientTime, message.token());
