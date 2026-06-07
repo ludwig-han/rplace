@@ -76,7 +76,8 @@
         // 닉네임 기억하기
         localStorage.setItem('user_nickname', myNickname);
 
-        const socket = new SockJS('http://localhost:8080/ws-connect');
+        // ✨ 수정 코드 (어떤 IP로 접속하든 자동으로 매핑됨)
+        const socket = new WebSocket("ws://" + window.location.host + "/ws/place");
         stompClient = Stomp.over(socket);
 
         stompClient.connect({}, function (frame) {
