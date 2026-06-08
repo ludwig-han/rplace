@@ -76,15 +76,21 @@
         // 닉네임 기억하기
         localStorage.setItem('user_nickname', myNickname);
 
-        // ✨ 수정 코드 (어떤 IP로 접속하든 자동으로 매핑됨)
-        // ✨ 수정 코드: 주소를 /ws-connect 로 맞추고 SockJS 객체로 감싸기!
-        // 1. 유저가 https로 왔으면 웹소켓도 https:// 로, http로 왔으면 http:// 로 프로토콜을 일치시킵니다.
-        var protocol = window.location.protocol === 'https:' ? 'https://' : 'http://';
+        // 1. 현재 접속한 도메인 주소를 그대로 가져옵니다. (예: disband-spooky-roster.ngrok-free.dev)
+        var hostUrl = window.location.host;
 
-        // 2. 완벽하게 일치된 프로토콜과 주소를 합성합니다.
-        var socketUrl = protocol + window.location.host + '/ws-connect';
+        // 2. ngrok 환경(https)인지 사설 IP 환경(http)인지에 따라 SockJS 주소 규격을 완벽히 정렬합니다.
+        var socketUrl;
+        if (window.location.protocol === 'https:') {
+            // ngrok 외부 접속일 때는 무조건 암호화된 https:// 로 강제 고정합니다.
+            socketUrl = 'https://' + hostUrl + '/ws-connect';
+        } else {
+            // 내부 사설 IP 접속일 때는 http:// 로 연결합니다.
+            socketUrl = 'http://' + hostUrl + '/ws-connect';
+        }
 
-        const socket = new SockJS(socketUrl);
+        // 3. 🚨 [핵심] ngrok 프록시가 뇌정지 오지 않도록 순수 웹소켓 수송(Transport)만 쓰라고 옵션을 박아버립니다.
+        var socket = new SockJS(socketUrl, null, {transports: ['websocket']});
         stompClient = Stomp.over(socket);
 
         stompClient.connect({}, function (frame) {
