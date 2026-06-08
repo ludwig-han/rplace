@@ -81,8 +81,7 @@
         var hostUrl = window.location.host;
 
         // 2. 🚨 SockJS 대신 순수 웹소켓(WebSocket) 주소로 매핑합니다.
-        // (보통 스프링 부트에서 SockJS를 걷어내면 /ws-connect/websocket 주소로 가야 붙습니다.)
-        var socketUrl = wsProtocol + hostUrl + '/ws-connect/websocket';
+        var socketUrl = wsProtocol + hostUrl + '/ws-connect';
 
         // 3. SockJS 객체 대신 순수 브라우저 웹소켓 객체를 STOMP에 주입!
         const socket = new WebSocket(socketUrl);
