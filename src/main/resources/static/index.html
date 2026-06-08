@@ -78,7 +78,13 @@
 
         // ✨ 수정 코드 (어떤 IP로 접속하든 자동으로 매핑됨)
         // ✨ 수정 코드: 주소를 /ws-connect 로 맞추고 SockJS 객체로 감싸기!
-        const socket = new SockJS("http://" + window.location.host + "/ws-connect");
+        // 1. 유저가 https로 왔으면 웹소켓도 https:// 로, http로 왔으면 http:// 로 프로토콜을 일치시킵니다.
+        var protocol = window.location.protocol === 'https:' ? 'https://' : 'http://';
+
+        // 2. 완벽하게 일치된 프로토콜과 주소를 합성합니다.
+        var socketUrl = protocol + window.location.host + '/ws-connect';
+
+        const socket = new SockJS(socketUrl);
         stompClient = Stomp.over(socket);
 
         stompClient.connect({}, function (frame) {
