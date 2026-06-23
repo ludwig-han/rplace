@@ -3,158 +3,322 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>채팅 테스트</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <title>r/place @ 상명</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background-color: #f5f5f5; }
-        .container { max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        #chat-box { height: 300px; border: 1px solid #ddd; overflow-y: scroll; padding: 10px; margin-bottom: 10px; background: #fafafa; border-radius: 4px; }
-        .input-group { display: flex; gap: 5px; margin-bottom: 10px; }
-        input { padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
-        #nickname { width: 80px; }
-        #message { flex-grow: 1; }
-        button { padding: 8px 15px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        button:disabled {
-            background: #cccccc !important;
-            color: #666666 !important;
-            cursor: not-allowed;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #1a1a2e; color: #eee; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; }
+
+        /* 닉네임 팝업 */
+        #nicknameModal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+            display: flex; align-items: center; justify-content: center; z-index: 100;
+        }
+        #nicknameModal .box {
+            background: #16213e; padding: 32px; border-radius: 12px;
+            display: flex; flex-direction: column; gap: 12px; min-width: 280px;
+        }
+        #nicknameModal h2 { text-align: center; margin-bottom: 8px; }
+        #nicknameInput {
+            padding: 10px; border-radius: 6px; border: 1px solid #444;
+            background: #0f3460; color: #eee; font-size: 16px;
+        }
+        #nicknameBtn {
+            padding: 10px; border-radius: 6px; border: none;
+            background: #e94560; color: white; font-size: 16px; cursor: pointer;
+        }
+
+        /* 메인 레이아웃 */
+        #main { display: flex; flex: 1; overflow: hidden; }
+
+        /* 캔버스 영역 */
+        #canvasArea {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            overflow: hidden; position: relative;
+        }
+        #canvasWrapper {
+            overflow: hidden; cursor: crosshair;
+            border: 2px solid #444;
+        }
+        canvas { display: block; image-rendering: pixelated; }
+
+        /* 줌 버튼 */
+        #zoomControls {
+            position: absolute; bottom: 16px; left: 16px;
+            display: flex; gap: 8px;
+        }
+        #zoomControls button {
+            width: 36px; height: 36px; border-radius: 6px;
+            border: none; background: #16213e; color: #eee;
+            font-size: 20px; cursor: pointer;
+        }
+
+        /* 색상 팔레트 */
+        #palette {
+            position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 6px; background: #16213e;
+            padding: 8px; border-radius: 10px;
+        }
+        .colorBtn {
+            width: 28px; height: 28px; border-radius: 4px;
+            border: 2px solid transparent; cursor: pointer;
+        }
+        .colorBtn.selected { border-color: white; transform: scale(1.2); }
+
+        /* 픽셀 정보 팝업 */
+        #pixelInfo {
+            display: none; position: absolute; background: #16213e;
+            border: 1px solid #444; border-radius: 8px;
+            padding: 10px 14px; font-size: 13px; pointer-events: none;
+        }
+
+        /* 채팅 */
+        #chatArea {
+            width: 260px; background: #16213e;
+            display: flex; flex-direction: column; border-left: 1px solid #333;
+        }
+        #chatArea h3 { padding: 12px; border-bottom: 1px solid #333; font-size: 14px; }
+        #chatMessages {
+            flex: 1; overflow-y: auto; padding: 10px;
+            display: flex; flex-direction: column; gap: 6px; font-size: 13px;
+        }
+        .chatMsg { background: #0f3460; padding: 6px 10px; border-radius: 6px; word-break: break-all; }
+        .chatMsg .sender { color: #e94560; font-weight: bold; font-size: 11px; }
+        #chatInputArea { display: flex; padding: 8px; gap: 6px; border-top: 1px solid #333; }
+        #chatInput {
+            flex: 1; padding: 8px; border-radius: 6px;
+            border: 1px solid #444; background: #0f3460; color: #eee; font-size: 13px;
+        }
+        #chatSendBtn {
+            padding: 8px 12px; border-radius: 6px; border: none;
+            background: #e94560; color: white; cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>👍 채팅방 테스트</h2>
-
-    <div class="input-group">
-        <input type="text" id="nickname" placeholder="닉네임" value="익명">
-        <button onclick="connect()">접속하기</button>
-    </div>
-
-    <div id="chat-box"></div>
-
-    <div class="input-group">
-        <input type="text" id="message" placeholder="메시지 내용 입력" onkeydown="if(event.keyCode==13) sendMessage()">
-        <button onclick="sendMessage()">전송</button>
+<!-- 닉네임 팝업 -->
+<div id="nicknameModal">
+    <div class="box">
+        <h2>🎨 r/place @ 상명</h2>
+        <p style="text-align:center; font-size:13px; color:#aaa;">닉네임을 입력하고 시작하세요</p>
+        <input id="nicknameInput" type="text" placeholder="닉네임 (최대 8자)" maxlength="8">
+        <button id="nicknameBtn">시작하기</button>
     </div>
 </div>
 
+<!-- 메인 -->
+<div id="main">
+    <!-- 캔버스 -->
+    <div id="canvasArea">
+        <div id="canvasWrapper">
+            <canvas id="canvas"></canvas>
+        </div>
+        <div id="zoomControls">
+            <button id="zoomIn">+</button>
+            <button id="zoomOut">-</button>
+        </div>
+        <div id="palette"></div>
+        <div id="pixelInfo"></div>
+    </div>
+
+    <!-- 채팅 -->
+    <div id="chatArea">
+        <h3>💬 채팅</h3>
+        <div id="chatMessages"></div>
+        <div id="chatInputArea">
+            <input id="chatInput" type="text" placeholder="메시지 입력..." maxlength="100">
+            <button id="chatSendBtn">전송</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script>
+    // ── 상수 ──
+    const COLS = 100, ROWS = 100;
+    const COLORS = [
+        '#ffffff','#000000','#ff4444','#ff8800','#ffff00',
+        '#44ff44','#4444ff','#ff44ff','#44ffff','#884400',
+        '#ff88aa','#88ff88','#8888ff','#888888','#ffcc00'
+    ];
+
+    // ── 상태 ──
+    let nickname = '';
+    let token = Math.random().toString(36).slice(2, 9);
+    let selectedColor = COLORS[0];
+    let zoom = 6; // 픽셀당 px
     let stompClient = null;
-    let myNickname = null;
-    let myToken = null; // ✨ 유저 고유 식별 토큰
+    let pixelData = {}; // "x,y" → {color, nickname}
 
-    // 1. 페이지가 켜지자마자 브라우저 저장소(LocalStorage) 확인
-    window.onload = function() {
-        myToken = localStorage.getItem('user_token');
-        myNickname = localStorage.getItem('user_nickname');
+    // ── DOM ──
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const pixelInfo = document.getElementById('pixelInfo');
 
-        // 만약 처음 방문한 유저라면 랜덤 고유 토큰 발급해두기
-        if (!myToken) {
-            myToken = 'usr_' + Math.random().toString(36).substring(2, 11);
-            localStorage.setItem('user_token', myToken);
+    // ── 캔버스 초기화 ──
+    function initCanvas() {
+        canvas.width = COLS * zoom;
+        canvas.height = ROWS * zoom;
+        drawAll();
+    }
+
+    function drawAll() {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        for (const [key, val] of Object.entries(pixelData)) {
+            const [x, y] = key.split(',').map(Number);
+            drawPixel(x, y, val.color);
         }
+        drawGrid();
+    }
 
-        // 이미 기존에 설정한 닉네임이 있다면 인풋창에 자동으로 채워주고 바로 접속 시도!
-        if (myNickname) {
-            document.getElementById('nickname').value = myNickname;
-            appendMessage("시스템", "기존 접속 정보가 확인되어 자동으로 연결을 시도합니다...", false);
-            connect();
+    function drawPixel(x, y, color) {
+        ctx.fillStyle = color;
+        ctx.fillRect(x * zoom, y * zoom, zoom, zoom);
+    }
+
+    function drawGrid() {
+        if (zoom < 4) return;
+        ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+        ctx.lineWidth = 0.5;
+        for (let x = 0; x <= COLS; x++) {
+            ctx.beginPath();
+            ctx.moveTo(x * zoom, 0);
+            ctx.lineTo(x * zoom, ROWS * zoom);
+            ctx.stroke();
         }
-    };
+        for (let y = 0; y <= ROWS; y++) {
+            ctx.beginPath();
+            ctx.moveTo(0, y * zoom);
+            ctx.lineTo(COLS * zoom, y * zoom);
+            ctx.stroke();
+        }
+    }
 
+    // ── 팔레트 ──
+    const palette = document.getElementById('palette');
+    COLORS.forEach(c => {
+        const btn = document.createElement('div');
+        btn.className = 'colorBtn';
+        btn.style.background = c;
+        if (c === selectedColor) btn.classList.add('selected');
+        btn.onclick = () => {
+            document.querySelectorAll('.colorBtn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedColor = c;
+        };
+        palette.appendChild(btn);
+    });
+
+    // ── 줌 ──
+    document.getElementById('zoomIn').onclick = () => { zoom = Math.min(zoom + 2, 20); initCanvas(); };
+    document.getElementById('zoomOut').onclick = () => { zoom = Math.max(zoom - 2, 2); initCanvas(); };
+
+    // ── 캔버스 클릭 ──
+    canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = Math.floor((e.clientX - rect.left) * scaleX / zoom);
+        const y = Math.floor((e.clientY - rect.top) * scaleY / zoom);
+
+        if (x < 0 || x >= COLS || y < 0 || y >= ROWS) return;
+
+        // 픽셀 찍기
+        stompClient.send('/app/pixel', {}, JSON.stringify({ x, y, color: selectedColor, nickname }));
+    });
+
+    // ── 픽셀 호버 (누가 찍었는지) ──
+    canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = Math.floor((e.clientX - rect.left) * scaleX / zoom);
+        const y = Math.floor((e.clientY - rect.top) * scaleY / zoom);
+        const key = `${x},${y}`;
+        const data = pixelData[key];
+
+        if (data) {
+            pixelInfo.style.display = 'block';
+            pixelInfo.style.left = (e.clientX + 12) + 'px';
+            pixelInfo.style.top = (e.clientY + 12) + 'px';
+            pixelInfo.innerHTML = `<b>${data.nickname}</b><br>${data.color}`;
+        } else {
+            pixelInfo.style.display = 'none';
+        }
+    });
+    canvas.addEventListener('mouseleave', () => { pixelInfo.style.display = 'none'; });
+
+    // ── WebSocket 연결 ──
     function connect() {
-        if (stompClient && stompClient.connected) return;
-
-        const nicknameInput = document.getElementById('nickname');
-        myNickname = nicknameInput.value.trim();
-
-        if(!myNickname) { alert("닉네임을 입력하세요!"); return; }
-
-        // 닉네임 기억하기
-        localStorage.setItem('user_nickname', myNickname);
-
-        // ✨ 수정 코드 (어떤 IP로 접속하든 자동으로 매핑됨)
-        // ✨ 수정 코드: 주소를 /ws-connect 로 맞추고 SockJS 객체로 감싸기!
-        const socket = new SockJS("http://" + window.location.host + "/ws-connect");
+        const socket = new WebSocket(`ws://${location.host}/ws-connect`);
         stompClient = Stomp.over(socket);
+        stompClient.debug = null;
 
-        stompClient.connect({}, function (frame) {
-            console.log('연결 성공: ' + frame);
-
-            nicknameInput.disabled = true;
-            const connectBtn = document.querySelector("button[onclick='connect()']");
-            connectBtn.disabled = true;
-            connectBtn.innerText = "접속 완료";
-
-            // ✨ [핵심 추가] 웹소켓 방 구독하기 직전에 과거 내역 긁어와서 그리기
-            fetch('/api/chat/history')
-                .then(response => response.json())
-                .then(history => {
-                    history.forEach(msg => {
-                        const isMe = (msg.token === myToken);
-                        appendMessage(msg.sender, msg.content, isMe, msg.timestamp);
-                    });
-                    appendMessage("시스템", "─── 이전 대화 내역 50개를 불러왔습니다 ───", false);
-                })
-                .catch(err => console.error("이전 대화 로딩 실패:", err));
-
-            // 실시간 리스너 작동
-            stompClient.subscribe('/topic/room', function (chatResponse) {
-                const msg = JSON.parse(chatResponse.body);
-                const isMe = (msg.token === myToken);
-                appendMessage(msg.sender, msg.content, isMe, msg.timestamp);
+        stompClient.connect({}, () => {
+            // 픽셀 구독
+            stompClient.subscribe('/topic/pixel', (msg) => {
+                const p = JSON.parse(msg.body);
+                pixelData[`${p.x},${p.y}`] = { color: p.color, nickname: p.nickname };
+                drawPixel(p.x, p.y, p.color);
             });
-        }, function(error) {
-            alert("연결 실패: " + error);
+
+            // 채팅 구독
+            stompClient.subscribe('/topic/room', (msg) => {
+                const m = JSON.parse(msg.body);
+                appendChat(m.sender, m.content, m.timestamp);
+            });
+
+            // 전체 캔버스 로드
+            fetch('/api/pixels').then(r => r.json()).then(pixels => {
+                pixels.forEach(p => {
+                    pixelData[`${p.x},${p.y}`] = { color: p.color, nickname: p.nickname };
+                });
+                drawAll();
+            });
+
+            // 채팅 히스토리 로드
+            fetch('/api/chat/history').then(r => r.json()).then(msgs => {
+                msgs.forEach(m => appendChat(m.sender, m.content, m.timestamp));
+            });
         });
     }
 
-    function sendMessage() {
-        const content = document.getElementById('message').value;
-        if(!stompClient || !content.trim()) return;
-
-        // 2. 메시지를 보낼 때 내 고유 토큰(myToken)을 슬쩍 끼워넣어서 백엔드로 전송
-        stompClient.send("/app/chat", {}, JSON.stringify({
-            sender: myNickname,
-            content: content,
-            token: myToken
-        }));
-        document.getElementById('message').value = '';
+    // ── 채팅 ──
+    function appendChat(sender, content, time) {
+        const div = document.createElement('div');
+        div.className = 'chatMsg';
+        div.innerHTML = `<div class="sender">${sender} <span style="color:#666;font-weight:normal">${time}</span></div>${content}`;
+        document.getElementById('chatMessages').appendChild(div);
+        document.getElementById('chatMessages').scrollTop = 9999;
     }
 
-    function appendMessage(sender, content, isMe, timestamp) {
-        const chatBox = document.getElementById('chat-box');
-        if (sender === "시스템") {
-            chatBox.innerHTML += `<div style="text-align: center; color: gray; margin: 5px 0; font-size: 0.9em;"><em>${content}</em></div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
-            return;
-        }
+    document.getElementById('chatSendBtn').onclick = sendChat;
+    document.getElementById('chatInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter') sendChat();
+    });
 
-        const timeHtml = `<span style="font-size: 0.75em; color: #888; margin: 0 5px; align-self: flex-end;">${timestamp || ''}</span>`;
-
-        if (isMe) {
-            chatBox.innerHTML += `<div style="display: flex; justify-content: flex-end; margin: 8px 0; align-items: flex-end;">
-                ${timeHtml}
-                <span style="background: #fee500; padding: 6px 10px; border-radius: 8px; max-width: 70%;">
-                    ${content}
-                </span>
-            </div>`;
-        } else {
-            chatBox.innerHTML += `<div style="text-align: left; margin: 8px 0;">
-                <div style="font-size: 0.8em; color: #555; margin-bottom: 2px;">${sender}</div>
-                <div style="display: flex; justify-content: flex-start; align-items: flex-end;">
-                    <span style="background: #ffffff; border: 1px solid #ddd; padding: 6px 10px; border-radius: 8px; max-width: 70%;">
-                        ${content}
-                    </span>
-                    ${timeHtml}
-                </div>
-            </div>`;
-        }
-        chatBox.scrollTop = chatBox.scrollHeight;
+    function sendChat() {
+        const input = document.getElementById('chatInput');
+        const content = input.value.trim();
+        if (!content) return;
+        stompClient.send('/app/chat', {}, JSON.stringify({ sender: nickname, content, token }));
+        input.value = '';
     }
+
+    // ── 닉네임 입력 ──
+    document.getElementById('nicknameBtn').onclick = () => {
+        const val = document.getElementById('nicknameInput').value.trim();
+        if (!val) return;
+        nickname = val;
+        document.getElementById('nicknameModal').style.display = 'none';
+        connect();
+        initCanvas();
+    };
+    document.getElementById('nicknameInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter') document.getElementById('nicknameBtn').click();
+    });
 </script>
 </body>
 </html>
